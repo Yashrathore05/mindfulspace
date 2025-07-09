@@ -1,0 +1,66 @@
+# Fixing Google Sign-in for MindfulSpace
+
+## Current Issues
+1. Plugin error with expo-auth-session (fixed)
+2. Google OAuth compliance issues 
+
+## Steps to Fix Google Sign-in
+
+### 1. Update Google Cloud Console Configuration
+1. Go to https://console.cloud.google.com/apis/credentials
+2. Select your project "mindfulspace-956b8"
+3. Edit your OAuth Client ID
+4. Update the Authorized redirect URIs:
+   - https://auth.expo.io/@yashrathore1408/mindfulspace
+   - https://mindfulspace-956b8.firebaseapp.com/__/auth/handler
+5. Update Authorized JavaScript origins:
+   - https://auth.expo.io
+   - https://mindfulspace-956b8.firebaseapp.com
+
+### 2. Configure OAuth Consent Screen
+1. Go to "OAuth consent screen" section
+2. Ensure app name, user support email, and developer contact info are filled
+3. Add scopes: `.../auth/userinfo.email`, `.../auth/userinfo.profile`
+4. Add your testing email address under "Test users"
+5. Verify your app information is complete
+6. Save and continue
+
+### 3. Test with Debugging Screen
+1. Import the new debug screen in App.js or your navigation:
+   ```javascript
+   import GoogleSignInDebug from './GoogleSignInDebug';
+   ```
+
+2. Add a route to the debug screen in your navigation:
+   ```javascript
+   <Stack.Screen name="GoogleDebug" component={GoogleSignInDebug} />
+   ```
+
+3. Alternatively, you can directly run it by modifying your App.js temporarily:
+   ```javascript
+   export default function App() {
+     return <GoogleSignInDebug />;
+   }
+   ```
+
+4. Run the app and use the debug screen to test Google Sign-in
+5. Check the logs displayed on screen for any error messages
+6. If successful, revert any temporary changes and go back to your normal Login screen
+
+### 4. Common Solutions
+- **Error**: "The redirect URI in the request: https://auth.expo.io/@... did not match a registered URI"
+  **Solution**: Make sure the Authorized redirect URI in Google Cloud Console includes https://auth.expo.io/@yashrathore1408/mindfulspace
+
+- **Error**: "This app is not verified"
+  **Solution**: Add your email as a test user in the OAuth consent screen
+
+- **Error**: "disallowed_useragent" 
+  **Solution**: Make sure you're testing on a supported browser/device
+
+### 5. Wait for Propagation
+After making changes in Google Cloud Console, it can take 5-10 minutes for changes to propagate. Be patient and try again after waiting.
+
+### 6. Testing
+1. Try the GoogleSignInDebug screen first to isolate any issues
+2. Once that works, try the actual login button
+3. The improved code now includes better error reporting and logging 

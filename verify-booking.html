@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Booking | Mindful Space</title>
+    <script type="module">
+        // Import Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY_HERE",
+            authDomain: "mindfulspace-956b8.firebaseapp.com",
+            projectId: "mindfulspace-956b8",
+            storageBucket: "mindfulspace-956b8.appspot.com", // Corrected format
+            messagingSenderId: "339812618356",
+            appId: "1:339812618356:web:c5229ca7fe96b9fa23c121",
+            measurementId: "G-5Q6HY1TCV0"
+        };
+
+        // Initialize Firebase with detailed logging
+        try {
+            console.log("Initializing Firebase...");
+            const app = initializeApp(firebaseConfig);
+            console.log("Firebase initialized successfully");
+            const db = getFirestore(app);
+            console.log("Firestore initialized");
+
+            // Function to get booking details
+            async function fetchBooking() {
+                try {
+                    console.log("Starting fetchBooking function");
+                    document.getElementById("loading-indicator").style.display = "block";
+                    document.getElementById("debug-info").innerHTML = "";
+                    
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const bookingId = urlParams.get("id");
+                    
+                    console.log("Booking ID from URL:", bookingId);
+                    
+                    if (!bookingId) {
+                        showError("Invalid Booking ID! Please check your link.");
+                        return;
+                    }
+
+                    // Add debug information about available collections
+                    try {
+                        addDebugInfo("Checking Firestore collections...");
+                        // Try to list collections to verify connection
+                        const collectionsSnapshot = await getDocs(collection(db, "consultations"));
+                        addDebugInfo(`Found ${collectionsSnapshot.size} document(s) in consultations collection`);
+                    } catch (collectionError) {
+                        addDebugInfo(`Error checking collections: ${collectionError.message}`);
+                    }
+
+                    // Try both possible collection names
+                    const possibleCollections = ["consultations", "bookings", "appointments"];
+                    let docSnap = null;
+                    let collectionUsed = "";
+
+                    for (const collectionName of possibleCollections) {
+                        try {
+                            addDebugInfo(`Trying to fetch from ${collectionName} collection...`);
+                            const docRef = doc(db, collectionName, bookingId);
+                            const tempSnap = await getDoc(docRef);
+                            
+                            if (tempSnap.exists()) {
+                                docSnap = tempSnap;
+                                collectionUsed = collectionName;
+                                addDebugInfo(`Found document in ${collectionName}!`);
+                                break;
+                            } else {
+                                addDebugInfo(`Document not found in ${collectionName}`);
+                            }
+                        } catch (collectionError) {
+                            addDebugInfo(`Error checking ${collectionName}: ${collectionError.message}`);
+                        }
+                    }
+
+                    if (docSnap && docSnap.exists()) {
+                        const data = docSnap.data();
+                        addDebugInfo("Document data retrieved successfully");
+                        console.log("Document data:", data);
+                        
+                        // Handle timestamp properly - check if it's a Firestore timestamp or Date
+                        let formattedDate = "Not specified";
+                        if (data.timestamp) {
+                            addDebugInfo(`Timestamp type: ${typeof data.timestamp}`);
+                            
+                            if (data.timestamp.toDate) {
+                                // It's a Firestore timestamp
+                                formattedDate = data.timestamp.toDate().toLocaleString();
+                                addDebugInfo("Using Firestore timestamp with toDate()");
+                            } else if (data.timestamp instanceof Date) {
+                                // It's already a Date object
+                                formattedDate = data.timestamp.toLocaleString();
+                                addDebugInfo("Using Date object");
+                            } else if (data.timestamp.seconds) {
+                                // It's a Firestore timestamp serialized
+                                formattedDate = new Date(data.timestamp.seconds * 1000).toLocaleString();
+                                addDebugInfo("Using serialized timestamp with seconds");
+                            } else {
+                                // Try to parse as string or number
+                                formattedDate = new Date(data.timestamp).toLocaleString();
+                                addDebugInfo("Using string/number timestamp");
+                            }
+                        } else if (data.date || data.appointmentDate || data.bookingDate) {
+                            // Try alternative date fields
+                            const dateField = data.date || data.appointmentDate || data.bookingDate;
+                            addDebugInfo(`Using alternative date field: ${dateField}`);
+                            formattedDate = new Date(dateField).toLocaleString();
+                        }
+                        
+                        document.getElementById("loading-indicator").style.display = "none";
+                        document.getElementById("booking-details").innerHTML = `
+                            <div class="success-box">
+                                <h2>Booking Verified ✅</h2>
+                                <div class="detail-row">
+                                    <strong>Doctor:</strong> ${data.doctorName || data.doctor || 'Not specified'} ${data.doctorRole || data.specialization ? `(${data.doctorRole || data.specialization})` : ''}
+                                </div>
+                                <div class="detail-row">
+                                    <strong>Qualifications:</strong> ${data.doctorQualifications || data.qualifications || 'Not specified'}
+                                </div>
+                                <div class="detail-row">
+                                    <strong>Patient:</strong> ${data.patientName || data.patient || data.userName || 'Not specified'} ${data.patientAge || data.age ? `(Age: ${data.patientAge || data.age})` : ''}
+                                </div>
+                                <div class="detail-row">
+                                    <strong>Reason:</strong> ${data.reason || data.purpose || data.description || 'Not specified'}
+                                </div>
+                                <div class="detail-row">
+                                    <strong>Date:</strong> ${formattedDate}
+                                </div>
+                                <div class="detail-row">
+                                    <strong>Status:</strong> <span class="status-confirmed">Confirmed</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        addDebugInfo("Document not found in any collection");
+                        showError("Booking Not Found! Please check your booking ID.");
+                    }
+                } catch (error) {
+                    console.error("Error fetching booking:", error);
+                    addDebugInfo(`Error details: ${error.message}`);
+                    if (error.code) {
+                        addDebugInfo(`Error code: ${error.code}`);
+                    }
+                    showError("An error occurred while verifying your booking. Please try again later.");
+                }
+            }
+
+            function showError(message) {
+                document.getElementById("loading-indicator").style.display = "none";
+                document.getElementById("booking-details").innerHTML = `
+                    <div class="error-box">
+                        <p class="error">${message}</p>
+                        <p>If you believe this is an error, please contact support.</p>
+                        <button id="retry-button" class="retry-button">Try Again</button>
+                    </div>
+                `;
+                
+                // Add retry button functionality
+                setTimeout(() => {
+                    const retryButton = document.getElementById('retry-button');
+                    if (retryButton) {
+                        retryButton.addEventListener('click', fetchBooking);
+                    }
+                }, 100);
+            }
+
+            function addDebugInfo(message) {
+                console.log(message);
+                const debugElement = document.getElementById("debug-info");
+                if (debugElement) {
+                    debugElement.innerHTML += `<p>• ${message}</p>`;
+                }
+            }
+
+            // Make functions available globally
+            window.fetchBooking = fetchBooking;
+            window.showError = showError;
+            window.addDebugInfo = addDebugInfo;
+
+            // Run function on page load
+            window.onload = fetchBooking;
+            
+        } catch (initError) {
+            console.error("Firebase initialization error:", initError);
+            document.getElementById("loading-indicator").style.display = "none";
+            document.getElementById("booking-details").innerHTML = `
+                <div class="error-box">
+                    <p class="error">Failed to initialize Firebase: ${initError.message}</p>
+                    <p>Please check your internet connection and try again.</p>
+                </div>
+            `;
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #0F172A;
+            color: #F8FAFC;
+            line-height: 1.6;
+            margin: 0;
+        }
+        h1 {
+            color: #22D3EE;
+            margin-bottom: 30px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #1E293B;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        .error {
+            color: #F87171;
+            font-weight: bold;
+        }
+        .error-box {
+            background-color: rgba(248, 113, 113, 0.1);
+            border-left: 4px solid #F87171;
+            padding: 15px;
+            text-align: left;
+            border-radius: 5px;
+        }
+        .success-box {
+            background-color: rgba(34, 211, 238, 0.1);
+            border-left: 4px solid #22D3EE;
+            padding: 20px;
+            text-align: left;
+            border-radius: 5px;
+        }
+        .detail-row {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #22D3EE;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .logo {
+            margin-bottom: 20px;
+            width: 100px;
+        }
+        .retry-button {
+            background-color: #334155;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .retry-button:hover {
+            background-color: #475569;
+        }
+        .debug-container {
+            margin-top: 20px;
+            background-color: #1E293B;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #334155;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .debug-container p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #94A3B8;
+        }
+        .debug-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #CBD5E1;
+        }
+        .toggle-debug {
+            background: none;
+            border: none;
+            color: #94A3B8;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            text-decoration: underline;
+        }
+        .status-confirmed {
+            color: #10B981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>MindfulSpace Booking Verification</h1>
+    <div class="container">
+        <div id="loading-indicator" style="margin: 20px 0;">
+            <div class="loading"></div>
+            <p>Verifying booking details...</p>
+        </div>
+        <div id="booking-details"></div>
+        <button id="toggle-debug-btn" class="toggle-debug" onclick="document.getElementById('debug-section').style.display = document.getElementById('debug-section').style.display === 'none' ? 'block' : 'none';">
+            Show Debug Information
+        </button>
+        <div id="debug-section" style="display: none;">
+            <div class="debug-container">
+                <div class="debug-title">Debug Information:</div>
+                <div id="debug-info"></div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top: 20px; color: #94A3B8; font-size: 14px;">
+        © 2024 MindfulSpace. All rights reserved.
+    </div>
+</body>
+</html> 

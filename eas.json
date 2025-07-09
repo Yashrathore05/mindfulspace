@@ -1,0 +1,30 @@
+{
+  "cli": {
+    "version": ">= 15.0.11",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview"
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production"
+    },
+    "apk": {
+      "android": {
+        "buildType": "apk"
+      },
+      "channel": "apk"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

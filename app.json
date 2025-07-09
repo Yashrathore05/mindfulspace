@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "mindfulspace",
+    "slug": "mindfulspace",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "scheme": "mindfulspace",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ix.mindfulspace",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "enableHermes": true,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.ix.mindfulspace"
+    },
+    "web": {
+      "favicon": "./assets/logo.png",
+      "config": {
+        "firebase": {
+          "apiKey": "YOUR_FIREBASE_API_KEY_HERE",
+          "authDomain": "mindfulspace-956b8.firebaseapp.com",
+          "projectId": "mindfulspace-956b8",
+          "appId": "1:339812618356:web:b7dd0bc29c2cdad5d05a68"
+        }
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "69cd3f01-7798-4db4-bbbf-d1745bb2790c"
+      }
+    },
+    "owner": "yashrathore1408",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/69cd3f01-7798-4db4-bbbf-d1745bb2790c"
+    },
+    "plugins": []
+  }
+}

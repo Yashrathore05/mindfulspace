@@ -1,0 +1,184 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{booktabs}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{codepurple},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codegreen},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{\textbf{MindfulSpace: A Mental Health and Mindfulness Mobile Application}}
+\author{Project Summary for Viva Examination}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Project Overview}
+MindfulSpace is a comprehensive mental health and mindfulness mobile application developed using React Native and Expo. The application aims to provide users with tools and resources to improve their mental wellbeing through a combination of AI-powered therapy, mindfulness exercises, and professional consultation options. The project integrates modern mobile development technologies with artificial intelligence to create an accessible mental health solution.
+
+\section{Key Features}
+
+\subsection{AI Voice Therapy}
+One of the core innovations of MindfulSpace is its AI-powered voice therapy system. This feature uses:
+\begin{itemize}
+    \item Speech-to-text conversion using Deepgram API for accurate transcription
+    \item Google's Gemini API for generating therapeutic responses
+    \item Text-to-speech conversion to provide a natural conversational experience
+    \item Multiple therapy approaches including Cognitive Behavioral Therapy (CBT), Mindfulness-Based Therapy, and Acceptance \& Commitment Therapy (ACT)
+\end{itemize}
+
+The voice therapy feature creates an interactive therapeutic experience where users can speak to the AI therapist, which processes their speech, generates appropriate therapeutic responses, and speaks back to the user.
+
+\subsection{Mindfulness and Wellness Tools}
+The application offers various mindfulness and wellness tools to support users' mental health:
+\begin{itemize}
+    \item Guided breathing exercises with visual feedback
+    \item Daily affirmations for positive reinforcement
+    \item Healthy eating guidance and nutrition tips
+    \item Sleep hygiene recommendations and tracking
+    \item Mindfulness exercises and meditation guidance
+\end{itemize}
+
+\subsection{Professional Consultation}
+For users who require professional human support, the application provides:
+\begin{itemize}
+    \item Booking system for scheduling sessions with therapists
+    \item Video consultation capabilities
+    \item Session history and notes tracking
+    \item Verified professional profiles
+\end{itemize}
+
+\subsection{AI Chatbot}
+The application includes a text-based AI chatbot for users to:
+\begin{itemize}
+    \item Get immediate mental health support
+    \item Learn about mental health topics
+    \item Track mood and thought patterns
+    \item Receive personalized coping strategies
+\end{itemize}
+
+\subsection{Mood Garden}
+An innovative feature that visualizes users' emotional progress as a growing garden, providing:
+\begin{itemize}
+    \item Visual representation of mood tracking
+    \item Gamification of mental health improvement
+    \item Progress visualization over time
+\end{itemize}
+
+\section{Technical Architecture}
+
+\subsection{Frontend Development}
+The application is built using:
+\begin{itemize}
+    \item React Native as the cross-platform framework
+    \item Expo for simplified development and deployment
+    \item React Navigation for screen management and navigation
+    \item Custom UI components with responsive design
+    \item Linear Gradient for visually appealing interfaces
+    \item React Native Reanimated for smooth animations
+\end{itemize}
+
+\subsection{Backend and APIs}
+The backend infrastructure leverages:
+\begin{itemize}
+    \item Firebase for authentication, database, and storage
+    \item Deepgram API for speech-to-text conversion
+    \item Google Gemini API for AI-powered responses
+    \item Expo AV for audio recording and playback
+    \item Expo FileSystem for managing audio files
+    \item Expo Notifications for reminders and alerts
+\end{itemize}
+
+\subsection{Authentication and Security}
+The application implements:
+\begin{itemize}
+    \item Firebase Authentication for secure user login
+    \item Firestore security rules for data protection
+    \item Permission management for device features (camera, microphone, location)
+    \item Secure API key management
+\end{itemize}
+
+\section{Subscription Model}
+MindfulSpace implements a tiered subscription model:
+\begin{itemize}
+    \item Free tier with basic mindfulness tools
+    \item Premium tier with AI chatbot and limited therapy sessions
+    \item Premium+ tier with unlimited AI voice therapy and professional consultations
+\end{itemize}
+
+\section{Implementation Challenges}
+
+\subsection{AI Integration Challenges}
+\begin{itemize}
+    \item Optimizing speech recognition accuracy for therapy context
+    \item Managing API response times for natural conversation flow
+    \item Ensuring therapeutic responses are appropriate and safe
+    \item Handling audio processing efficiently on mobile devices
+\end{itemize}
+
+\subsection{Mobile Development Challenges}
+\begin{itemize}
+    \item Optimizing performance across different devices
+    \item Managing permissions for microphone, camera, and notifications
+    \item Creating responsive UI that works on various screen sizes
+    \item Handling offline capabilities and synchronization
+\end{itemize}
+
+\section{Testing and Quality Assurance}
+The application underwent:
+\begin{itemize}
+    \item Functional testing of all features
+    \item Performance testing on various devices
+    \item User acceptance testing with focus groups
+    \item Security testing for data protection
+    \item Accessibility testing for inclusive design
+\end{itemize}
+
+\section{Future Development Roadmap}
+Planned enhancements include:
+\begin{itemize}
+    \item Integration with wearable devices for biometric feedback
+    \item Expanded AI therapy capabilities with more specialized approaches
+    \item Community features for peer support
+    \item Enhanced data visualization for mental health tracking
+    \item Offline mode for core functionality
+\end{itemize}
+
+\section{Conclusion}
+MindfulSpace represents a modern approach to mental health support that combines mobile technology with artificial intelligence to provide accessible mental health resources. The application addresses a critical need for affordable, accessible mental health support through a combination of AI-powered tools and professional human services. By leveraging React Native and Expo, the application provides a cross-platform solution that can reach users across different devices and operating systems.
+
+The integration of voice therapy, mindfulness tools, and professional consultation creates a comprehensive mental health ecosystem that can support users at various stages of their mental health journey. The project demonstrates the potential of AI to augment traditional mental health services while maintaining a focus on user privacy, data security, and therapeutic effectiveness.
+
+\end{document} 
